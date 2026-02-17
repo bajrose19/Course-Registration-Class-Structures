@@ -1,3 +1,8 @@
+package hw1;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class Student extends User implements StudentInterface {
 	
 	private ArrayList<Course> registeredCourses;
