@@ -1,6 +1,8 @@
 package hw1;
 
-public class StudentInterface {
+import java.util.ArrayList;
+
+public interface StudentInterface {
 	// methods the student class will be implementing 
 	
 	ArrayList<Course> viewRegisteredCourses();
@@ -8,5 +10,6 @@ public class StudentInterface {
 	boolean courseRegistration(Course courses);
 	boolean courseWithdrawl(Course courses);
 	ArrayList<Course> viewAllCourses(ArrayList<Course> courses);
-
+	void displayMenu();
+	boolean courseWithdrawal(Course courses);
 }

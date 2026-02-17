@@ -48,15 +48,13 @@ public class Student extends User implements StudentInterface {
 	@Override
 	public boolean courseWithdrawal(Course courses) {
 		 String fullName = getFirstName() + " " + getLastName();
-
 	        if (registeredCourses.contains(courses)) {
 	            if (courses.removeStudent(fullName)) {
 	                registeredCourses.remove(courses);
 	                return true;
 	            }
 	        }
-
-	        return false;
+	     return false;
 		
 	}
 	
@@ -73,11 +71,12 @@ public class Student extends User implements StudentInterface {
 		
 	}
 	 @Override
-	    public String toString() {
+	 public String toString() {
 	        return getFirstName() + " " + getLastName() +
 	               " (" + getUsername() + ")";
 	    }
-		
+	 
+	 public void displayMenu() {}
 }
 	
 
