@@ -6,6 +6,7 @@ import java.util.ArrayList;
 /**
  * Course class stores all course information required by the system.
  * Implements Serializable (Req 12) and Comparable for sorting (Admin Reports).
+ * Demonstrates: Encapsulation, Method Overloading, Comparable
  */
 public class Course implements Serializable, Comparable<Course> {
 
@@ -20,80 +21,43 @@ public class Course implements Serializable, Comparable<Course> {
     private int sectionNumber;
     private String location;
 
-    // Constructor (initial students = 0 as required)
+    // Constructor (currentStudents starts at 0 per Req 08)
     public Course(String courseName, String courseID, int maxStudents,
                   String instructor, int sectionNumber, String location) {
-        this.courseName = courseName;
-        this.courseID = courseID;
-        this.maxStudents = maxStudents;
+        this.courseName     = courseName;
+        this.courseID       = courseID;
+        this.maxStudents    = maxStudents;
         this.currentStudents = 0;
-        this.studentNames = new ArrayList<>();
-        this.instructor = instructor;
-        this.sectionNumber = sectionNumber;
-        this.location = location;
+        this.studentNames   = new ArrayList<>();
+        this.instructor     = instructor;
+        this.sectionNumber  = sectionNumber;
+        this.location       = location;
     }
 
     // Getters (Encapsulation)
-    public String getCourseName() {
-        return courseName;
-    }
+    public String          getCourseName()     { return courseName; }
+    public String          getCourseID()       { return courseID; }
+    public int             getMaxStudents()    { return maxStudents; }
+    public int             getCurrentStudents(){ return currentStudents; }
+    public ArrayList<String> getStudentNames() { return studentNames; }
+    public String          getInstructor()     { return instructor; }
+    public int             getSectionNumber()  { return sectionNumber; }
+    public String          getLocation()       { return location; }
 
-    public String getCourseID() {
-        return courseID;
-    }
+    // Setters (Encapsulation — name & ID are intentionally NOT settable per Req 03)
+    public void setMaxStudents(int maxStudents)   { this.maxStudents = maxStudents; }
+    public void setInstructor(String instructor)  { this.instructor = instructor; }
+    public void setSectionNumber(int sectionNumber){ this.sectionNumber = sectionNumber; }
+    public void setLocation(String location)       { this.location = location; }
 
-    public int getMaxStudents() {
-        return maxStudents;
-    }
-
-    public int getCurrentStudents() {
-        return currentStudents;
-    }
-
-    public ArrayList<String> getStudentNames() {
-        return studentNames;
-    }
-
-    public String getInstructor() {
-        return instructor;
-    }
-
-    public int getSectionNumber() {
-        return sectionNumber;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    // Setters (Encapsulation)
-    public void setMaxStudents(int maxStudents) {
-        this.maxStudents = maxStudents;
-    }
-
-    public void setInstructor(String instructor) {
-        this.instructor = instructor;
-    }
-
-    public void setSectionNumber(int sectionNumber) {
-        this.sectionNumber = sectionNumber;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    // Method Overloading (important for design report)
+    // Method Overloading: addStudent by name or by Student object (Polymorphism-friendly)
     public boolean addStudent(String studentFullName) {
-        if (!isFull()) {
-            studentNames.add(studentFullName);
-            currentStudents++;
-            return true;
-        }
-        return false;
+        if (isFull()) return false;
+        studentNames.add(studentFullName);
+        currentStudents++;
+        return true;
     }
 
-    // Overloaded version using Student object (Polymorphism-friendly)
     public boolean addStudent(Student student) {
         return addStudent(student.getFirstName() + " " + student.getLastName());
     }
@@ -106,26 +70,25 @@ public class Course implements Serializable, Comparable<Course> {
         return false;
     }
 
-    // Check if course is full (Req 03 Reports)
+    // Check if the course is at capacity
     public boolean isFull() {
         return currentStudents >= maxStudents;
     }
 
-    // Required for sorting courses by number of registered students
+    // Required for sorting by current enrollment (Admin Report - Req 03)
     @Override
-    public int compareTo(Course otherCourse) {
-        return this.currentStudents - otherCourse.currentStudents;
+    public int compareTo(Course other) {
+        return this.currentStudents - other.currentStudents;
     }
 
     @Override
     public String toString() {
-        return "Course Name: " + courseName +
-                "\nCourse ID: " + courseID +
-                "\nInstructor: " + instructor +
-                "\nSection: " + sectionNumber +
-                "\nLocation: " + location +
-                "\nCurrent Students: " + currentStudents +
-                "\nMaximum Students: " + maxStudents;
+        return "Course Name    : " + courseName +
+               "\nCourse ID      : " + courseID +
+               "\nInstructor     : " + instructor +
+               "\nSection        : " + sectionNumber +
+               "\nLocation       : " + location +
+               "\nEnrollment     : " + currentStudents + "/" + maxStudents +
+               (isFull() ? " [FULL]" : "");
     }
 }
-
