@@ -8,195 +8,183 @@ public class CourseRegistrationSystem {
 
     static ArrayList<Course> courses = new ArrayList<>();
     static ArrayList<Student> students = new ArrayList<>();
+    static Admin admin = new Admin();
 
     public static void main(String[] args) {
 
-        // Try to load saved data first
         if (!loadSerializedData()) {
             readCoursesFromCSV("MyUniversityCourses.csv");
         }
 
         startSystem();
 
-        // Save data when program exits
         saveSerializedData();
     }
 
-    // LOAD CSV (PUT CSV IN PROJECT ROOT FOLDER)
+    public static void startSystem() {
+        Scanner sc = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("\n1. Admin Login");
+            System.out.println("2. Student Login");
+            System.out.println("3. Exit");
+            int choice = sc.nextInt();
+            sc.nextLine();
+
+            if (choice == 1) {
+                adminMenu(sc);
+            } else if (choice == 2) {
+                studentMenu(sc);
+            } else {
+                break;
+            }
+        }
+    }
+
+    public static void adminMenu(Scanner sc) {
+        System.out.print("Enter admin username: ");
+        String u = sc.nextLine();
+        System.out.print("Enter admin password: ");
+        String p = sc.nextLine();
+
+        if (!admin.login(u, p)) {
+            System.out.println("Invalid admin credentials.");
+            return;
+        }
+
+        while (true) {
+            System.out.println("\n1. View All Courses");
+            System.out.println("2. Create Course");
+            System.out.println("3. Delete Course");
+            System.out.println("4. View Full Courses");
+            System.out.println("5. Back");
+            int choice = sc.nextInt();
+            sc.nextLine();
+
+            if (choice == 1) {
+                admin.displayAllCourses(courses);
+            } else if (choice == 2) {
+                System.out.print("Course Name: ");
+                String name = sc.nextLine();
+                System.out.print("Course ID: ");
+                String id = sc.nextLine();
+                System.out.print("Max Students: ");
+                int max = sc.nextInt();
+                sc.nextLine();
+                System.out.print("Instructor: ");
+                String inst = sc.nextLine();
+                System.out.print("Section: ");
+                int sec = sc.nextInt();
+                sc.nextLine();
+                System.out.print("Location: ");
+                String loc = sc.nextLine();
+
+                Course c = new Course(name, id, max, inst, sec, loc);
+                admin.createCourse(courses, c);
+
+            } else if (choice == 3) {
+                System.out.print("Course ID: ");
+                String id = sc.nextLine();
+                System.out.print("Section: ");
+                int sec = sc.nextInt();
+                sc.nextLine();
+                admin.deleteCourse(courses, id, sec);
+
+            } else if (choice == 4) {
+                admin.displayFullCourses(courses);
+            } else {
+                break;
+            }
+        }
+    }
+
+    public static void studentMenu(Scanner sc) {
+        System.out.print("Enter username: ");
+        String username = sc.nextLine();
+        System.out.print("Enter password: ");
+        String password = sc.nextLine();
+
+        Student student = new Student(username, password, "First", "Last");
+        students.add(student);
+
+        while (true) {
+            System.out.println("\n1. View All Courses");
+            System.out.println("2. View Available Courses");
+            System.out.println("3. Register Course");
+            System.out.println("4. Withdraw Course");
+            System.out.println("5. View My Courses");
+            System.out.println("6. Back");
+
+            int choice = sc.nextInt();
+
+            if (choice == 1) {
+                student.viewAllCourses(courses);
+            } else if (choice == 2) {
+                student.viewAvailableCourses(courses);
+            } else if (choice == 3) {
+                System.out.print("Enter course index: ");
+                int index = sc.nextInt();
+                student.registerCourse(courses.get(index));
+            } else if (choice == 4) {
+                System.out.print("Enter course index: ");
+                int index = sc.nextInt();
+                student.withdrawCourse(courses.get(index));
+            } else if (choice == 5) {
+                student.viewRegisteredCourses();
+            } else {
+                break;
+            }
+        }
+    }
+
     public static void readCoursesFromCSV(String fileName) {
         try {
             BufferedReader br = new BufferedReader(new FileReader(fileName));
+            br.readLine(); // skip header
             String line;
-
-            br.readLine(); // Skip header
 
             while ((line = br.readLine()) != null) {
                 String[] data = line.split(",");
 
-                String courseName = data[0];
-                String courseID = data[1];
-                int maxStudents = Integer.parseInt(data[2]);
-                String instructor = data[5];
-                int section = Integer.parseInt(data[6]);
-                String location = data[7];
-
-                Course course = new Course(
-                        courseName,
-                        courseID,
-                        maxStudents,
-                        instructor,
-                        section,
-                        location
+                Course c = new Course(
+                        data[0],
+                        data[1],
+                        Integer.parseInt(data[2]),
+                        data[5],
+                        Integer.parseInt(data[6]),
+                        data[7]
                 );
-
-                courses.add(course);
+                courses.add(c);
             }
-
             br.close();
             System.out.println("Courses loaded from CSV.");
 
-        } catch (IOException e) {
-            System.out.println("Error reading CSV: " + e.getMessage());
-        } catch (NumberFormatException e) {
-            System.out.println("Error parsing CSV numbers: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("CSV Load Error: " + e.getMessage());
         }
     }
 
-    // SIMPLE MENU SYSTEM
-    public static void startSystem() {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.println("Welcome to Course Registration System");
-        System.out.print("Enter username: ");
-        String username = scanner.nextLine();
-
-        System.out.print("Enter password: ");
-        String password = scanner.nextLine();
-
-        Student student = new Student(username, password, "Default", "Student");
-        students.add(student);
-
-        int choice = 0;
-
-        do {
-            System.out.println("\n1. View All Courses");
-            System.out.println("2. Register for Course");
-            System.out.println("3. Withdraw from Course");
-            System.out.println("4. View My Courses");
-            System.out.println("5. Exit");
-            System.out.print("Enter choice: ");
-
-            // Prevent crash if user enters non-integer
-            if (!scanner.hasNextInt()) {
-                System.out.println("Invalid input. Please enter a number.");
-                scanner.next();
-                continue;
-            }
-
-            choice = scanner.nextInt();
-
-            switch (choice) {
-                case 1:
-                    if (courses.isEmpty()) {
-                        System.out.println("No courses available.");
-                    } else {
-                        for (int i = 0; i < courses.size(); i++) {
-                            System.out.println(i + ": " + courses.get(i));
-                        }
-                    }
-                    break;
-
-                case 2:
-                    System.out.print("Enter course index to register: ");
-                    if (scanner.hasNextInt()) {
-                        int regIndex = scanner.nextInt();
-
-                        if (regIndex >= 0 && regIndex < courses.size()) {
-                            if (student.courseRegistration(courses.get(regIndex))) {
-                                System.out.println("Registered successfully!");
-                            } else {
-                                System.out.println("Registration failed (course may be full or already registered).");
-                            }
-                        } else {
-                            System.out.println("Invalid course index.");
-                        }
-                    } else {
-                        System.out.println("Invalid input.");
-                        scanner.next();
-                    }
-                    break;
-
-                case 3:
-                    System.out.print("Enter course index to withdraw: ");
-                    if (scanner.hasNextInt()) {
-                        int wIndex = scanner.nextInt();
-
-                        if (wIndex >= 0 && wIndex < courses.size()) {
-                            if (student.courseWithdrawal(courses.get(wIndex))) {
-                                System.out.println("Withdrawn successfully!");
-                            } else {
-                                System.out.println("Withdrawal failed (not registered in this course).");
-                            }
-                        } else {
-                            System.out.println("Invalid course index.");
-                        }
-                    } else {
-                        System.out.println("Invalid input.");
-                        scanner.next();
-                    }
-                    break;
-
-                case 4:
-                    System.out.println("Your Courses:");
-                    ArrayList<Course> myCourses = student.viewRegisteredCourses();
-                    if (myCourses.isEmpty()) {
-                        System.out.println("You are not registered in any courses.");
-                    } else {
-                        for (Course c : myCourses) {
-                            System.out.println(c);
-                        }
-                    }
-                    break;
-
-                case 5:
-                    System.out.println("Exiting system...");
-                    break;
-
-                default:
-                    System.out.println("Invalid choice. Please select 1-5.");
-            }
-
-        } while (choice != 5);
-
-        scanner.close();
-    }
-
-    // SAVE DATA (Serialization)
     public static void saveSerializedData() {
         try {
             ObjectOutputStream oos = new ObjectOutputStream(
                     new FileOutputStream("courses.ser"));
             oos.writeObject(courses);
             oos.close();
-            System.out.println("Data saved.");
-        } catch (IOException e) {
-            System.out.println("Error saving data: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Save error.");
         }
     }
 
-    // LOAD DATA (Deserialization)
-    @SuppressWarnings("unchecked")
     public static boolean loadSerializedData() {
         try {
             ObjectInputStream ois = new ObjectInputStream(
                     new FileInputStream("courses.ser"));
             courses = (ArrayList<Course>) ois.readObject();
             ois.close();
-            System.out.println("Serialized data loaded.");
             return true;
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println("No saved data found. Loading from CSV instead.");
+        } catch (Exception e) {
             return false;
         }
     }
 }
+
