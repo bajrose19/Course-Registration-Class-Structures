@@ -14,7 +14,7 @@ public class Student extends User implements StudentInterface { //Student inheri
 
    // setting up the first name, last name, username, and password to be entered by the user
     public Student(String username, String password, String firstName, String lastName,
-                   ArrayList<Course> allCourses) {
+                   ArrayList<Course> allCourses) { //
         super(username, password, firstName, lastName);
         this.allCourses        = allCourses;
         this.registeredCourses = new ArrayList<>(); //declaring registeredCourses as a new array list 
