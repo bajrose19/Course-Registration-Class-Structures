@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class Student extends User implements StudentInterface { //Student inherits from the user class and implements the StudentInterface
 
+    // used with serialization to ensure that the old changes work with any new changes made by the user especially in terms of the student class 
     private static final long serialVersionUID = 1L;
 
     // The main course list (array) that the student can access 
@@ -13,6 +14,7 @@ public class Student extends User implements StudentInterface { //Student inheri
     private final ArrayList<Course> registeredCourses;
 
    // setting up the first name, last name, username, and password to be entered by the user
+    // using the super keyword to calls the parent class and the first name, last name, username, and password defined there  
     public Student(String username, String password, String firstName, String lastName,
                    ArrayList<Course> allCourses) { //
         super(username, password, firstName, lastName);
@@ -27,7 +29,8 @@ public class Student extends User implements StudentInterface { //Student inheri
     }
 
     @Override
-    // returns only courses that are not full and that students can register for 
+    // returns only courses that are not full and that students can register for
+    // 
     public ArrayList<Course> viewAvailableCourses() {
         ArrayList<Course> available = new ArrayList<>();
         for (Course c : allCourses) {
