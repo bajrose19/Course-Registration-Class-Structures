@@ -2,36 +2,32 @@ package hw1;
 
 import java.util.ArrayList;
 
-/**
- * Student class represents a student user in the Course Registration System.
- * Extends User (Inheritance - Req 07) and implements StudentInterface (Req 06).
- * Demonstrates: Encapsulation, Polymorphism, Inheritance, Method Overriding
- */
-public class Student extends User implements StudentInterface {
+public class Student extends User implements StudentInterface { //Student inherits from the user class and implements the StudentInterface
 
     private static final long serialVersionUID = 1L;
 
-    // The shared master course list (injected so student can browse all courses)
+    // The main course list (array) that the student can access 
     private final ArrayList<Course> allCourses;
 
-    // Courses this student is currently enrolled in
+    // The list (array) of classes that the student is enrolled in 
     private final ArrayList<Course> registeredCourses;
 
+   // setting up the first name, last name, username, and password to be entered by the user
     public Student(String username, String password, String firstName, String lastName,
                    ArrayList<Course> allCourses) {
         super(username, password, firstName, lastName);
         this.allCourses        = allCourses;
-        this.registeredCourses = new ArrayList<>();
+        this.registeredCourses = new ArrayList<>(); //declaring registeredCourses as a new array list 
     }
 
     @Override
-    // viewAllCourses shows every course available in the system (Req 04-1)
+    // shows every course available from the csv file 
     public ArrayList<Course> viewAllCourses() {
         return new ArrayList<>(allCourses);
     }
 
     @Override
-    // viewAvailableCourses returns only courses that are NOT full (Req 04-2)
+    // returns only courses that are not full and that students can register for 
     public ArrayList<Course> viewAvailableCourses() {
         ArrayList<Course> available = new ArrayList<>();
         for (Course c : allCourses) {
@@ -43,21 +39,21 @@ public class Student extends User implements StudentInterface {
     }
 
     @Override
-    // courseRegistration enrolls the student in a course (Req 04-3)
-    // returns false if: course is null, already registered, or course is full
+    // enrolls a student in a course
+    // returns false if course is course is full 
     public boolean courseRegistration(Course c) {
         if (c == null)          return false;
         if (isRegisteredIn(c))  return false;
         if (c.isFull())         return false;
 
         c.addStudent(this);           // adds name to course roster
-        registeredCourses.add(c);     // tracks locally
+        registeredCourses.add(c);     
         return true;
     }
 
     @Override
-    // courseWithdrawal removes the student from a course (Req 04-4)
-    // returns false if: course is null or student is not registered
+    // removes a student from a course 
+    // returns false if student is not registered
     public boolean courseWithdrawal(Course c) {
         if (c == null)         return false;
         if (!isRegisteredIn(c)) return false;
@@ -68,20 +64,20 @@ public class Student extends User implements StudentInterface {
     }
 
     @Override
-    // viewRegisteredCourses returns a copy of the student's own course list (Req 04-5)
+    // returns a copy of a student's currents course list 
     public ArrayList<Course> viewRegisteredCourses() {
         return new ArrayList<>(registeredCourses);
     }
 
     @Override
-    // isRegisteredIn checks whether this student is enrolled in the given course
+    // checks whether a student is enrolled in a specific course
     public boolean isRegisteredIn(Course c) {
         if (c == null) return false;
         return registeredCourses.contains(c);
     }
 
     @Override
-    // displayMenu prints the student menu — Method Overriding of User.displayMenu()
+    // prints the student menu
     public void displayMenu() {
         System.out.println(
             "\n========================================" +
