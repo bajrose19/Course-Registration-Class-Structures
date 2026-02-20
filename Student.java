@@ -30,7 +30,7 @@ public class Student extends User implements StudentInterface { //Student inheri
 
     @Override
     // returns only courses that are not full and that students can register for
-    // 
+    // if the course object is not full and does exist the student can add it to their registered courses
     public ArrayList<Course> viewAvailableCourses() {
         ArrayList<Course> available = new ArrayList<>();
         for (Course c : allCourses) {
@@ -45,25 +45,30 @@ public class Student extends User implements StudentInterface { //Student inheri
     // enrolls a student in a course
     // returns false if course is course is full 
     public boolean courseRegistration(Course c) {
-        if (c == null)          return false;
-        if (isRegisteredIn(c))  return false;
-        if (c.isFull())         return false;
+        if (c == null)          
+            return false;
+        if (isRegisteredIn(c))  
+            return false;
+        if (c.isFull())         
+            return false;
 
         c.addStudent(this);           // adds name to course roster
         registeredCourses.add(c);     
-        return true;
+        return true;                  // returns true 
     }
 
     @Override
     // removes a student from a course 
     // returns false if student is not registered
     public boolean courseWithdrawal(Course c) {
-        if (c == null)         return false;
-        if (!isRegisteredIn(c)) return false;
+        if (c == null)         
+            return false;
+        if (!isRegisteredIn(c)) 
+            return false;
 
-        c.removeStudent(getFullName());
+        c.removeStudent(getFullName()); // removes name to the course roster
         registeredCourses.remove(c);
-        return true;
+        return true;                    // returns true 
     }
 
     @Override
@@ -74,8 +79,10 @@ public class Student extends User implements StudentInterface { //Student inheri
 
     @Override
     // checks whether a student is enrolled in a specific course
+    // if the course object is empty the student cannot enroll as it returns false
     public boolean isRegisteredIn(Course c) {
-        if (c == null) return false;
+        if (c == null) 
+            return false;
         return registeredCourses.contains(c);
     }
 
