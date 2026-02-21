@@ -90,17 +90,15 @@ public class Student extends User implements StudentInterface { //Student inheri
     // prints the student menu
     public void displayMenu() {
         System.out.println(
-            "\n========================================" +
-            "\n  Course Registration System — Student" +
-            "\n========================================" +
+           
+            "\n  Course Registration System — Student" +  
             "\nCourse Management:" +
             "\n  1. View all courses" +
             "\n  2. View available (not full) courses" +
             "\n  3. Register for a course" +
             "\n  4. Withdraw from a course" +
             "\n  5. View my registered courses" +
-            "\n  6. Exit" +
-            "\n========================================"
+            "\n  6. Exit" 
         );
     }
 
