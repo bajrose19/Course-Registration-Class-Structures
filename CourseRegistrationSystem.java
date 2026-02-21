@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * CourseRegistrationSystem — Main Driver
- * Handles startup, login routing, menu loops, CSV loading, and serialization (Req 12).
+ * CourseRegistrationSystem
+ * Handles startup, login routing, menu loops, CSV loading, and serialization
+ * Displays login menu, routes users to menu, loads course data from a CSV file, loads/saves serialized data
  */
 public class CourseRegistrationSystem {
 
@@ -14,12 +15,10 @@ public class CourseRegistrationSystem {
     static ArrayList<Student> students = new ArrayList<>();
 
     public static void main(String[] args) {
-        System.out.println("========================================");
         System.out.println("   Welcome to the Course Registration   ");
         System.out.println("              System                    ");
-        System.out.println("========================================");
 
-        // Req 12: try to load serialized data first; fall back to CSV
+        // try to load serialized data first; fall back to CSV
         if (!loadSerializedData()) {
             readCoursesFromCSV("MyUniversityCourses.csv");
         }
@@ -27,6 +26,7 @@ public class CourseRegistrationSystem {
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
 
+       //keeps running until user selects Exit
         while (running) {
             System.out.println("\nAre you an Admin or a Student?");
             System.out.println("  1. Admin");
@@ -38,12 +38,15 @@ public class CourseRegistrationSystem {
 
             switch (input) {
                 case "1":
+                    //route to admin login and menu
                     handleAdminLogin(scanner);
                     break;
                 case "2":
+                    //route to student login
                     handleStudentLogin(scanner);
                     break;
                 case "3":
+                    //signal the loop to stop
                     running = false;
                     break;
                 default:
@@ -51,14 +54,14 @@ public class CourseRegistrationSystem {
             }
         }
 
-        // Req 12: save state on exit
+        // save state on exit
         saveSerializedData();
         System.out.println("Goodbye!");
     }
 
-    // -----------------------------------------------------------------------
+   
     // LOGIN HANDLERS
-    // -----------------------------------------------------------------------
+  
 
     static void handleAdminLogin(Scanner scanner) {
         System.out.print("Username: ");
@@ -66,8 +69,10 @@ public class CourseRegistrationSystem {
         System.out.print("Password: ");
         String password = scanner.nextLine().trim();
 
+       // create an admin instance with access to shared students and courses lists
         Admin admin = new Admin(students, courses);
 
+     // validate credentials using the inherited login() method from User
         if (admin.login(username, password)) {
             System.out.println("\nAdmin login successful. Welcome, " + admin.getFullName() + "!");
             runAdminMenu(scanner, admin);
@@ -75,9 +80,9 @@ public class CourseRegistrationSystem {
             System.out.println("Invalid admin credentials.");
         }
     }
-
+    // offers student two options: login or create a new account
     static void handleStudentLogin(Scanner scanner) {
-        System.out.println("\n--- Student Login ---");
+        System.out.println("\nStudent Login");
         System.out.println("  1. Login with existing account");
         System.out.println("  2. Create new account");
         System.out.print("Choice: ");
@@ -89,6 +94,7 @@ public class CourseRegistrationSystem {
             System.out.print("Password: ");
             String password = scanner.nextLine().trim();
 
+           // search for matching credentials
             Student found = findStudent(username, password);
             if (found != null) {
                 System.out.println("\nStudent login successful. Welcome, " + found.getFullName() + "!");
@@ -98,6 +104,7 @@ public class CourseRegistrationSystem {
             }
 
         } else if (choice.equals("2")) {
+            //collect info for new account
             System.out.print("First name: ");
             String first = scanner.nextLine().trim();
             System.out.print("Last name: ");
@@ -107,11 +114,13 @@ public class CourseRegistrationSystem {
             System.out.print("Password (min 8 chars): ");
             String password = scanner.nextLine().trim();
 
+             // minimum password length is 8
             if (password.length() < 8) {
                 System.out.println("Password too short. Account not created.");
                 return;
             }
 
+          // create the new student object with access to the shared course list
             Student newStudent = new Student(username, password, first, last, courses);
             Admin tempAdmin = new Admin(students, courses);
 
@@ -126,9 +135,9 @@ public class CourseRegistrationSystem {
         }
     }
 
-    // -----------------------------------------------------------------------
     // ADMIN MENU LOOP
-    // -----------------------------------------------------------------------
+    // each case delegates to the corresponding admin method
+ 
 
     static void runAdminMenu(Scanner scanner, Admin admin) {
         boolean active = true;
@@ -139,7 +148,7 @@ public class CourseRegistrationSystem {
 
             switch (input) {
 
-                // --- 1. Create course ---
+                //  1. Create course 
                 case "1": {
                     System.out.print("Course Name: ");
                     String name = scanner.nextLine().trim();
@@ -161,7 +170,7 @@ public class CourseRegistrationSystem {
                     break;
                 }
 
-                // --- 2. Delete course ---
+                //  2. Delete course 
                 case "2": {
                     System.out.print("Enter Course ID to delete: ");
                     String id = scanner.nextLine().trim();
@@ -171,7 +180,7 @@ public class CourseRegistrationSystem {
                     break;
                 }
 
-                // --- 3. Edit course ---
+                // 3. Edit course 
                 case "3": {
                     System.out.print("Course ID to edit: ");
                     String id = scanner.nextLine().trim();
@@ -191,7 +200,7 @@ public class CourseRegistrationSystem {
                     break;
                 }
 
-                // --- 4. Display course by ID ---
+                //  4. Display course by ID 
                 case "4": {
                     System.out.print("Enter Course ID: ");
                     String id = scanner.nextLine().trim();
@@ -200,7 +209,7 @@ public class CourseRegistrationSystem {
                     break;
                 }
 
-                // --- 5. Register a student ---
+                // 5. Register a student 
                 case "5": {
                     System.out.print("First name: ");
                     String first = scanner.nextLine().trim();
@@ -223,28 +232,28 @@ public class CourseRegistrationSystem {
                     break;
                 }
 
-                // --- 6. View all courses ---
+                //  6. View all courses 
                 case "6": {
                     ArrayList<Course> all = admin.viewAllCourses();
                     if (all.isEmpty()) {
                         System.out.println("No courses in the system.");
                     } else {
-                        System.out.println("\n--- All Courses ---");
+                        System.out.println("\n All Courses");
                         for (Course c : all) {
                             System.out.println(c);
-                            System.out.println("-------------------");
+                            
                         }
                     }
                     break;
                 }
 
-                // --- 7. View full courses ---
+                // 7. View full courses 
                 case "7": {
                     ArrayList<Course> full = admin.viewFullCourses();
                     if (full.isEmpty()) {
                         System.out.println("No courses are currently full.");
                     } else {
-                        System.out.println("\n--- Full Courses ---");
+                        System.out.println("\n Full Courses");
                         for (Course c : full) {
                             System.out.println(c.getCourseName() + " (" + c.getCourseID() + ")" +
                                                " — " + c.getCurrentStudents() + "/" + c.getMaxStudents());
@@ -253,7 +262,7 @@ public class CourseRegistrationSystem {
                     break;
                 }
 
-                // --- 8. Write full courses to file ---
+                //  8. Write full courses to file 
                 case "8": {
                     System.out.print("Enter filename (e.g. full_courses.txt): ");
                     String filename = scanner.nextLine().trim();
@@ -267,7 +276,7 @@ public class CourseRegistrationSystem {
                     break;
                 }
 
-                // --- 9. View students in a course ---
+                // 9. View students in a course 
                 case "9": {
                     System.out.print("Enter Course ID: ");
                     String id = scanner.nextLine().trim();
@@ -281,7 +290,7 @@ public class CourseRegistrationSystem {
                     break;
                 }
 
-                // --- 10. View courses of a student ---
+                //  10. View courses of a student
                 case "10": {
                     System.out.print("Student first name: ");
                     String first = scanner.nextLine().trim();
@@ -299,10 +308,10 @@ public class CourseRegistrationSystem {
                     break;
                 }
 
-                // --- 11. Sort courses by enrollment ---
+                //  11. Sort courses by enrollment
                 case "11": {
                     ArrayList<Course> sorted = admin.sortCoursesByCurrentStudents();
-                    System.out.println("\n--- Courses Sorted by Enrollment (Least → Most) ---");
+                    System.out.println("\n Courses Sorted by Enrollment (Least → Most)");
                     for (Course c : sorted) {
                         System.out.println(c.getCourseName() + " (" + c.getCourseID() + ")" +
                                            " — " + c.getCurrentStudents() + "/" + c.getMaxStudents());
@@ -310,10 +319,10 @@ public class CourseRegistrationSystem {
                     break;
                 }
 
-                // --- 12. Exit ---
+                //  12. Exit 
                 case "12":
                     active = false;
-                    System.out.println("Returning to main menu...");
+                    System.out.println("Returning to main menu:");
                     break;
 
                 default:
@@ -322,9 +331,8 @@ public class CourseRegistrationSystem {
         }
     }
 
-    // -----------------------------------------------------------------------
     // STUDENT MENU LOOP
-    // -----------------------------------------------------------------------
+
 
     static void runStudentMenu(Scanner scanner, Student student) {
         boolean active = true;
@@ -335,7 +343,7 @@ public class CourseRegistrationSystem {
 
             switch (input) {
 
-                // --- 1. View all courses ---
+                //  1. View all courses 
                 case "1": {
                     ArrayList<Course> all = student.viewAllCourses();
                     if (all.isEmpty()) {
@@ -354,7 +362,7 @@ public class CourseRegistrationSystem {
                     break;
                 }
 
-                // --- 2. View available (not full) courses ---
+                // 2. View available (not full) courses
                 case "2": {
                     ArrayList<Course> available = student.viewAvailableCourses();
                     if (available.isEmpty()) {
@@ -371,7 +379,7 @@ public class CourseRegistrationSystem {
                     break;
                 }
 
-                // --- 3. Register for a course ---
+                //  3. Register for a course 
                 case "3": {
                     System.out.print("Enter Course ID to register: ");
                     String id = scanner.nextLine().trim();
@@ -414,7 +422,7 @@ public class CourseRegistrationSystem {
                     break;
                 }
 
-                // --- 4. Withdraw from a course ---
+                //  4. Withdraw from a course 
                 case "4": {
                     ArrayList<Course> myCourses = student.viewRegisteredCourses();
                     if (myCourses.isEmpty()) {
@@ -449,7 +457,7 @@ public class CourseRegistrationSystem {
                     break;
                 }
 
-                // --- 5. View my registered courses ---
+                //  5. View my registered courses
                 case "5": {
                     ArrayList<Course> myCourses = student.viewRegisteredCourses();
                     if (myCourses.isEmpty()) {
@@ -467,7 +475,7 @@ public class CourseRegistrationSystem {
                     break;
                 }
 
-                // --- 6. Exit ---
+                //  6. Exit 
                 case "6":
                     active = false;
                     System.out.println("Returning to main menu...");
@@ -479,9 +487,7 @@ public class CourseRegistrationSystem {
         }
     }
 
-    // -----------------------------------------------------------------------
     // UTILITY METHODS
-    // -----------------------------------------------------------------------
 
     // Find a student in the master list by credentials
     static Student findStudent(String username, String password) {
@@ -491,7 +497,7 @@ public class CourseRegistrationSystem {
         return null;
     }
 
-    // Safe int reader — keeps asking until a valid int is entered
+    //  keeps asking until a valid int is entered
     static int readInt(Scanner scanner) {
         while (true) {
             String line = scanner.nextLine().trim();
@@ -503,9 +509,7 @@ public class CourseRegistrationSystem {
         }
     }
 
-    // -----------------------------------------------------------------------
-    // CSV LOADER (Req 08)
-    // -----------------------------------------------------------------------
+    // CSV LOADER 
 
     public static void readCoursesFromCSV(String fileName) {
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
@@ -520,8 +524,8 @@ public class CourseRegistrationSystem {
                 String courseName = data[0].trim();
                 String courseID   = data[1].trim();
                 int    maxStudents= Integer.parseInt(data[2].trim());
-                // data[3] = Current_Students (always 0 on load per Req 08)
-                // data[4] = List_Of_Names    (NULL on load per Req 08)
+                // data[3] = Current_Students (always 0 on load)
+                // data[4] = List_Of_Names    (NULL on load)
                 String instructor = data[5].trim();
                 int    section    = Integer.parseInt(data[6].trim());
                 String location   = data[7].trim();
@@ -541,9 +545,7 @@ public class CourseRegistrationSystem {
         }
     }
 
-    // -----------------------------------------------------------------------
-    // SERIALIZATION (Req 12)
-    // -----------------------------------------------------------------------
+    // SERIALIZATION 
 
     @SuppressWarnings("unchecked")
     public static boolean loadSerializedData() {
@@ -563,7 +565,7 @@ public class CourseRegistrationSystem {
             students = (ArrayList<Student>) ois.readObject();
             studentsLoaded = true;
         } catch (IOException | ClassNotFoundException e) {
-            // no saved students — start fresh
+            // no saved students so start fresh
         }
 
         if (coursesLoaded) {
@@ -592,3 +594,4 @@ public class CourseRegistrationSystem {
         System.out.println("Data saved successfully.");
     }
 }
+
