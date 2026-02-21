@@ -5,13 +5,14 @@ import java.util.ArrayList;
 
 /**
  * Course class stores all course information required by the system.
- * Implements Serializable (Req 12) and Comparable for sorting (Admin Reports).
- * Demonstrates: Encapsulation, Method Overloading, Comparable
+ * Implements Serializable and Comparable for sorting (Admin Reports).
  */
 public class Course implements Serializable, Comparable<Course> {
-
+  
+    //required line by Serializable to verify class compatibility during deserialization
     private static final long serialVersionUID = 1L;
 
+    // core course fields
     private String courseName;
     private String courseID;
     private int maxStudents;
@@ -21,7 +22,7 @@ public class Course implements Serializable, Comparable<Course> {
     private int sectionNumber;
     private String location;
 
-    // Constructor (currentStudents starts at 0 per Req 08)
+    // Constructor (currentStudents starts at 0)
     public Course(String courseName, String courseID, int maxStudents,
                   String instructor, int sectionNumber, String location) {
         this.courseName     = courseName;
@@ -44,13 +45,13 @@ public class Course implements Serializable, Comparable<Course> {
     public int             getSectionNumber()  { return sectionNumber; }
     public String          getLocation()       { return location; }
 
-    // Setters (Encapsulation — name & ID are intentionally NOT settable per Req 03)
+    // Setters (Encapsulation — name & ID are intentionally not settable)
     public void setMaxStudents(int maxStudents)   { this.maxStudents = maxStudents; }
     public void setInstructor(String instructor)  { this.instructor = instructor; }
     public void setSectionNumber(int sectionNumber){ this.sectionNumber = sectionNumber; }
     public void setLocation(String location)       { this.location = location; }
 
-    // Method Overloading: addStudent by name or by Student object (Polymorphism-friendly)
+    // Method Overloading: addStudent by name or by Student object 
     public boolean addStudent(String studentFullName) {
         if (isFull()) return false;
         studentNames.add(studentFullName);
@@ -58,6 +59,7 @@ public class Course implements Serializable, Comparable<Course> {
         return true;
     }
 
+    //adds a student to this course by their full name string
     public boolean addStudent(Student student) {
         return addStudent(student.getFirstName() + " " + student.getLastName());
     }
@@ -75,7 +77,8 @@ public class Course implements Serializable, Comparable<Course> {
         return currentStudents >= maxStudents;
     }
 
-    // Required for sorting by current enrollment (Admin Report - Req 03)
+    // Required for sorting by current enrollment 
+    // compares this course to another by current enrollement count
     @Override
     public int compareTo(Course other) {
         return this.currentStudents - other.currentStudents;
@@ -92,3 +95,4 @@ public class Course implements Serializable, Comparable<Course> {
                (isFull() ? " [FULL]" : "");
     }
 }
+
