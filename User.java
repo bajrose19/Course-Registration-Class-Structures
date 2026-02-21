@@ -4,17 +4,20 @@ import java.io.Serializable;
 
 /**
  * Abstract User Class (Parent of Admin and Student)
- * Demonstrates: Inheritance, Encapsulation, Abstraction
+ * Base class for all users in the course registration system
  */
 public abstract class User implements Serializable {
 
+    // to ensure compatibility
     private static final long serialVersionUID = 1L;
 
+    //protected so that admin and student can access them directly
     protected String username;
     protected String password;
     protected String firstName;
     protected String lastName;
 
+    // constructor to initialize all four identity fields for a new User
     public User(String username, String password, String firstName, String lastName) {
         this.username = username;
         this.password = password;
@@ -22,7 +25,7 @@ public abstract class User implements Serializable {
         this.lastName = lastName;
     }
 
-    // Abstract method - overridden by Admin and Student (Method Overriding)
+    // Abstract method, overridden by Admin and Student 
     public abstract void displayMenu();
 
     // Getters (Encapsulation)
@@ -59,8 +62,10 @@ public abstract class User implements Serializable {
         return this.username.equals(username) && this.password.equals(password);
     }
 
+    //toString override, returns a human readable summary of this user
     @Override
     public String toString() {
         return "Username: " + username + "\nName: " + getFullName();
     }
 }
+
